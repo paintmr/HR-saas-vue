@@ -37,6 +37,12 @@ module.exports = {
       errors: true
     }
   },
+  proxy: { // 跨域代理
+    '/api': {
+      target: 'http://ihrm-java.itheima.net/',
+      changeOrigin: true
+    }
+  },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
