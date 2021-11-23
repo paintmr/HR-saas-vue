@@ -4,7 +4,8 @@ import request from '@/utils/request'
  * 登录接口
  */
 export function login(data) {
-  request({
+  // 返回了promise对象
+  return request({
     url: '/sys/login',
     method: 'post',
     data
