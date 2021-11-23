@@ -35,12 +35,13 @@ module.exports = {
     overlay: {
       warnings: false,
       errors: true
-    }
-  },
-  proxy: { // 跨域代理
-    '/api': {
-      target: 'http://ihrm-java.itheima.net/',
-      changeOrigin: true
+    },
+    proxy: { // 跨域代理
+      // key（'/api'）表示一旦请求地址和这个key（'/api'）吻合，会触发代理，具体的代理信息在该key（'/api'）所对应的对象里面
+      '/api': {
+        target: 'http://ihrm-java.itheima.net/',
+        changeOrigin: true
+      }
     }
   },
   configureWebpack: {

@@ -16,10 +16,9 @@ const mutations = {
 }
 const actions = {
   async login(context, data) {
-    const result = await login(data)
-    if (result.data.success) {
-      context.commit('setToken', result.data.data)
-    }
+    // 这里得写上await。因为login(data)是个异步函数。如果不写await，就会先执行下面的context代码。写了await，就会等login(data)是个异步action执行完了以后才去执行context代码。
+    const token = await login(data)
+    context.commit('setToken', token)
   }
 }
 

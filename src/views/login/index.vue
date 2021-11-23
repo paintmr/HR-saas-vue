@@ -59,6 +59,7 @@
 
 <script>
 import { validMobile } from '@/utils/validate'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'Login',
@@ -95,6 +96,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['user/login']),
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -106,18 +108,24 @@ export default {
       })
     },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
+      // ref 可以获取一个元素的dome对象
+      // ref作用到组件上的时候，可以获取该组件的实例
+      // 校验表单
+      this.$refs.loginForm.validate(async isOK => {
+        if (isOK) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+          try {
+            // 只有校验通过了，才调用action
+            // 这里得写上await。因为'user/login'是个异步action。如果不写await，就会先执行下面的跳转代码this.$router.push('/')。写了await，就会等'user/login'是个异步action执行完了以后才去执行this.$router.push('/')
+            await this['user/login'](this.loginForm)
+            // async标记的函数是一个promise对象
+            this.$router.push('/')
+          } catch (error) {
+            console.log(error) // 在响应拦截器里已经有弹出错误消息的代码，所以这里只用打印一下即可
+          } finally {
+            // 不论执行try还是catch，都会执行到这里
             this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
+          }
         }
       })
     }

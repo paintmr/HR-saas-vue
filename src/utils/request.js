@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Message } from 'element-ui'
 
 // create an axios instance
 const service = axios.create({
@@ -12,6 +13,19 @@ const service = axios.create({
 service.interceptors.request.use()
 
 // response interceptor
-service.interceptors.response.use()
+service.interceptors.response.use(response => {
+  const { success, message, data } = response.data
+  if (success) {
+    return data
+  } else {
+    // 出现错误，不进入then()，而进入catch()
+    Message.error(message) // 提示错误消息
+    // Promise.reject()的参数是错误对象，而message是string，就new一个错误对象new Error(message)传给Promise.reject()
+    return Promise.reject(new Error(message))
+  }
+}, error => {
+  Message.error(error.message) // 提示错误信息
+  return Promise.reject(error) // 把错误对象error传递给Promise.reject()。返回执行错误，下一步就不再进入then()（比如login().then().catch()），而进入catch()。如果是try catch，出现错误，也会进入catch。
+})
 
 export default service
