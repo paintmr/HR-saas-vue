@@ -4,15 +4,15 @@
 
     <!-- <breadcrumb class="breadcrumb-container" /> -->
     <div class="app-breadcrumb">
-      江苏传智播客教育科技股份有限公司
+      朱雀科技股份有限公司
       <span class="breadBtn">体验版</span>
     </div>
 
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img src="@/assets/common/bigUserHeader.png" class="user-avatar">
-          <span class="name">管理员</span>
+          <img v-imageerror="defaultAvatar" :src="avatar" class="user-avatar">
+          <span class="name">{{ name }}</span>
           <i class="el-icon-caret-bottom" style="color:#fff" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -43,9 +43,16 @@ export default {
     // Breadcrumb,
     Hamburger
   },
+  data() {
+    return {
+      defaultAvatar: require('@/assets/common/head.jpg')
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
+      'avatar',
+      'name',
       'avatar'
     ])
   },
@@ -53,15 +60,15 @@ export default {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
-    async logout() {
-      await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    logout() {
+      this.$store.dispatch('user/logout') // 不论写不写await，登出方法都是同步的
+      this.$router.push(`/login`) // 跳到登录
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss"  scoped>
 .navbar {
   height: 50px;
   overflow: hidden;
@@ -165,12 +172,23 @@ export default {
   }
 }
 
-// .el-dropdown-menu {
-//   background-image: -webkit-linear-gradient(left, #3d6df8, #5b8cff);
-// }
-// .el-popper {
-//   .el-dropdown-menu__item {
-//     color:#fff;
-//   }
-// }
+.el-dropdown-menu {
+  background-image: -webkit-linear-gradient(left, #3d6df8, #5b8cff);
+}
+.el-popper {
+  .el-dropdown-menu__item {
+    color:#fff;
+    &:hover {
+      color:#3d6df8;
+    }
+  }
+}
+</style>
+<style lang="scss">
+// 下面的样式（navbar右边下拉框最上面的小三角），在scoped里面无法修改，这样写才能修改。
+.el-popper {
+  .popper__arrow:after {
+    border-bottom-color: #5b8cff !important;
+  }
+}
 </style>
