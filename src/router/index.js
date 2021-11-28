@@ -1,6 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import employeeRouter from './modules/employees'
+import approvalRouter from './modules/approvals'
+import attendanceRouter from './modules/attendances'
+import departmentRouter from './modules/departments'
+import permissionRouter from './modules/permission'
+import salaryRouter from './modules/salaries'
+import settingRouter from './modules/setting'
+import socialRouter from './modules/social'
 
 Vue.use(Router)
 
@@ -52,7 +59,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '首页', icon: 'dashboard' }
     }]
   },
 
@@ -62,7 +69,14 @@ export const constantRoutes = [
 
 // 动态路由
 export const asyncRoutes = [
-  employeeRouter
+  employeeRouter,
+  approvalRouter,
+  attendanceRouter,
+  departmentRouter,
+  permissionRouter,
+  salaryRouter,
+  settingRouter,
+  socialRouter
 ]
 
 const createRouter = () => new Router({

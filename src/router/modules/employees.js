@@ -9,7 +9,8 @@ export default {
     path: '', // 如果子路由的path什么都不写，则当前路由为子路由的默认路由
     component: () => import('@/views/employees'),
     meta: {
-      title: '员工管理'
+      title: '员工管理',
+      icon: 'people'
     }
   }]
 }
