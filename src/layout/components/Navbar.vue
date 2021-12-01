@@ -186,7 +186,8 @@ export default {
 </style>
 <style lang="scss">
 // 下面的样式（navbar右边下拉框最上面的小三角），在scoped里面无法修改，这样写才能修改。
-.el-popper {
+// 不能用.el-popper代替#dropdown-menu-791，否则所有的下拉菜单的小三角都会变成蓝色。
+#dropdown-menu-791 {
   .popper__arrow:after {
     border-bottom-color: #5b8cff !important;
   }
