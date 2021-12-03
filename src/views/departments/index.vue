@@ -1,65 +1,28 @@
 <template>
-  <div class="dashboard-container">
-    <div class="app-container">
-      <!-- 组织架构内容 - 头部 -->
-      <el-card class="tree-card">
-        <el-row type="flex" justify="space-between" align="middle" style="height: 40px">
-          <el-col>
-            <!-- 左侧内容 -->
-            <span>朱雀科技股份有限公司</span>
-          </el-col>
-          <el-col :span="4">
-            <el-row type="flex" justify="end">
-              <el-col>负责人</el-col>
-              <el-col>
-                <el-dropdown>
-                  <span>
-                    下拉菜单<i class="el-icon-arrow-down el-icon--right" />
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>添加子部门</el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </el-col>
-            </el-row>
-          </el-col>
-        </el-row>
+  <!-- 组织架构内容 - 头部 -->
+  <el-card class="tree-card">
+    <TreeTool :tree-node="companyInfo" :is-root="true" />
+    <!-- 也可以写成 <tree-tool />-->
 
-        <!-- 放置一个el-tree -->
-        <el-tree :data="dptData" :props="defaultProps">
-          <el-row slot-scope="{ data }" type="flex" justify="space-between" align="middle" style="height: 40px; width:100%">
-            <el-col>
-              <!-- 左侧内容 -->
-              <span>{{ data.name }}</span>
-            </el-col>
-            <el-col :span="4">
-              <el-row type="flex" justify="end">
-                <el-col>{{ data.manager }}</el-col>
-                <el-col>
-                  <el-dropdown>
-                    <span>
-                      下拉菜单<i class="el-icon-arrow-down el-icon--right" />
-                    </span>
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item>添加子部门</el-dropdown-item>
-                      <el-dropdown-item>编辑子部门</el-dropdown-item>
-                      <el-dropdown-item>删除子部门</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-                </el-col>
-              </el-row>
-            </el-col>
-          </el-row>
-        </el-tree>
-      </el-card>
-    </div>
-  </div>
+    <!-- 放置一个el-tree -->
+    <el-tree :data="dptData" :props="defaultProps">
+      <tree-tool slot-scope="{ data }" :tree-node="data" />
+    </el-tree>
+  </el-card>
 </template>
 
 <script>
+import TreeTool from './components/tree-tool.vue'
+import { getDepartments } from '@/api/departments'
+import { transListToTreeData } from '@/utils'
+
 export default {
+  components: {
+    TreeTool
+  },
   data() {
     return {
+      companyInfo: { },
       dptData:
       [
         {
@@ -83,6 +46,17 @@ export default {
         children: 'children',
         label: 'name'
       }
+    }
+  },
+  created() {
+    this.getDepartments()
+  },
+  methods: {
+    async getDepartments() {
+      const { companyName, depts } = await getDepartments()
+      this.companyInfo = { name: companyName, manager: '朱元璋', id: '' }
+      // this.dptData = depts// 能这么写。这么写无法得到树形结构数据
+      this.dptData = transListToTreeData(depts, '')
     }
   }
 }
