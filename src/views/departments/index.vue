@@ -6,7 +6,7 @@
 
     <!-- 放置一个el-tree -->
     <el-tree :data="dptData" :props="defaultProps">
-      <tree-tool slot-scope="{ data }" :tree-node="data" />
+      <tree-tool slot-scope="{ data }" :tree-node="data" @delDpt="getDepartments" />
     </el-tree>
   </el-card>
 </template>
