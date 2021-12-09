@@ -39,7 +39,7 @@ export default {
   methods: {
     operateDpt(type) {
       if (type === 'add') {
-        console.log('添加')
+        this.$emit('addDpt', this.treeNode)
       } else if (type === 'edit') {
         console.log('编辑')
       } else {
