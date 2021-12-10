@@ -12,7 +12,9 @@
     </el-card>
 
     <!-- 新增部门的弹出层 -->
-    <AddDpt :show-add-dialog="showAddDialog" :tree-node="node" />
+    <!-- <AddDpt :show-add-dialog="showAddDialog" :tree-node="node" @hideAddDptDialog="showAddDialog=false" @addDpt="getDepartments" /> -->
+    <!-- 用sync修饰符，上面的代码中，删除@hideAddDptDialog="showAddDialog=false"。 :show-add-dialog="showAddDialog"写成:show-add-dialog.sync="showAddDialog" -->
+    <AddDpt :show-add-dialog.sync="showAddDialog" :tree-node="node" @addDpt="getDepartments" />
   </div>
 </template>
 
