@@ -16,7 +16,7 @@
     <!-- 用sync修饰符，上面的代码中，删除@hideAddDptDialog="showAddDialog=false"。 :show-add-dialog="showAddDialog"写成:show-add-dialog.sync="showAddDialog" -->
     <AddDpt ref="editDptForm" :show-add-dialog.sync="showAddDialog" :tree-node="node" @OKDpt="getDepartments" />
 
-    <div v-loading="loading" class="dashboard-container" />
+    <div v-loading="loading" class="loading-container" />
   </div>
 </template>
 
@@ -81,13 +81,16 @@ export default {
     editDpt(node) {
       this.showAddDialog = true
       this.node = node
-      this.$refs.editDptForm.getDepartmentDetail(node.id)
+      this.$refs.editDptForm.getDepartmentDetail(node.id) // 通过父组件调用子组件方法
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.loading-container {
+    margin: 30px;
+}
 .tree-card {
   padding: 30px 140px;
   font-size: 14px;

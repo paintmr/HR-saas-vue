@@ -19,8 +19,8 @@
         <el-select v-model="dptForm.manager" style="width:80%" placeholder="请选择" @focus="getEmployeeList">
           <el-option v-for="employee in employeeList" :key="employee.id" :label="employee.username" :value="employee.username" />
         </el-select></el-form-item>
-      <el-form-item label="部门介绍" prop="desc">
-        <el-input v-model="dptForm.desc" style="width:80%" placeholder="1-300个字符" type="textarea" :rows="3" />
+      <el-form-item label="部门介绍" prop="introduce">
+        <el-input v-model="dptForm.introduce" style="width:80%" placeholder="1-300个字符" type="textarea" :rows="3" />
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -54,7 +54,7 @@ export default {
       if (this.dptForm.id) {
         // 有id是编辑部门模式
         // 校验规则：本部门（treeNode）的子部门中，除了用户正在编辑的这个部门叫“运营部”以外，其它部门都不能用这个名字
-        isNameRepeat = depts.filter(item => item.pid === this.treeNode.id && item.id !== this.dptForm.id).some(item => item.name === value)
+        isNameRepeat = depts.filter(item => item.pid === this.dptForm.pid && item.id !== this.dptForm.id).some(item => item.name === value)
       } else {
         // 无id是新增部门模式
         //  dpts.filter(item => item.pid === this.treeNode.id)获取本部门（treeNode）的所有子部门，这返回一个数组。在此基础上，some(item => item.name === value)筛选是否有与用户输入的部门（value）相同的值。
@@ -80,7 +80,7 @@ export default {
         name: '',
         code: '',
         manager: '',
-        desc: ''
+        introduce: ''
       },
       rules: {
         name: [
@@ -96,7 +96,7 @@ export default {
         manager: [
           { required: true, message: '部门负责人不能为空', trigger: 'blur' }
         ],
-        desc: [
+        introduce: [
           { required: true, message: '部门介绍不能为空', trigger: 'blur' },
           { min: 1, max: 300, message: '部门介绍 1 到 300 个字符', trigger: 'blur' }
         ]
@@ -115,27 +115,30 @@ export default {
     },
     dptOK() {
       this.$refs.dptForm.validate(async isOK => {
+        let msg = ''
         if (isOK) {
           if (this.dptForm.id) {
             // 如果有id，就是编辑部门模式（这是服务器传过来的id）
             await updateDepartment(this.dptForm)
+            msg = '编辑'
           } else {
             // 没有id，是新增部门模式
             await addDepartment({ ...this.dptForm, pid: this.treeNode.id })
+            msg = '新增'
           }
           this.hideDptDialog()
           this.$emit('OKDpt') // 通知父组件拉取新的部门列表
-          this.$message.success('添加部门成功')
+          this.$message.success(msg + '部门成功')
         }
       })
     },
     hideDptDialog() {
-      // 重置表单数据。以this.dptForm.id为依据判断弹出框标题为“编辑部门”还是“新增部门”。如果不重置表单，在点击了“编辑部门”后（此时this.dptForm.id由服务器返回的数据获得），点击“新增部门”，已久显示“编辑部门”
+      // 重置表单数据。以this.dptForm.id为依据判断弹出框标题为“编辑部门”还是“新增部门”。如果不重置表单，在点击了“编辑部门”后（此时this.dptForm.id由服务器返回的数据获得），点击“新增部门”，依旧显示“编辑部门”
       this.dptForm = {
         name: '',
         code: '',
         manager: '',
-        desc: ''
+        introduce: ''
       }
       this.$refs.dptForm.resetFields() // 重置校验字段。这种方法无法重置id（因为id不是form里的字段，而是服务器返回的数据），所以不用resetFields()来重置dptForm的数据，但是需要它来重置验证的提示信息。比如“同级部门下已有市场部”，关闭表单的时候也要去掉。
 
@@ -144,7 +147,7 @@ export default {
       this.$emit('update:showAddDialog', false) // 固定写法update:props名称
     },
     async getDepartmentDetail(id) {
-      this.dptForm = await getDepartmentDetail(id) // 这里id不能写this.treeNode.id，因为这是props值，而props值是异步的
+      this.dptForm = await getDepartmentDetail(id) // 这里id不能写this.treeNode.id，因为这是props值，而props值是异步从父组件传过来的。父组件调用这个getDepartmentDetail()方法时，很可能this.treeNode的值还没有从父组件传过来。所以直接用调用方法传参的形式来传id。
     }
   }
 
