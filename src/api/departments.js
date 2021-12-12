@@ -34,3 +34,21 @@ export function addDepartment(data) {
     data: data // axios的body参数是data
   })
 }
+/**
+ * 获取某个部门的详情
+ */
+export function getDepartmentDetail(id) {
+  return request({
+    url: `/company/department/${id}`
+  })
+}
+/**
+ * 编辑部门
+ */
+export function updateDepartment(data) {
+  return request({
+    url: `/company/department/${data.id}`,
+    method: 'put',
+    data
+  })
+}

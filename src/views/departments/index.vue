@@ -7,14 +7,16 @@
 
       <!-- 放置一个el-tree -->
       <el-tree :data="dptData" :props="defaultProps">
-        <tree-tool slot-scope="{ data }" :tree-node="data" @delDpt="getDepartments" @addDpt="addDpt" />
+        <tree-tool slot-scope="{ data }" :tree-node="data" @delDpt="getDepartments" @addDpt="addDpt" @editDpt="editDpt" />
       </el-tree>
     </el-card>
 
     <!-- 新增部门的弹出层 -->
     <!-- <AddDpt :show-add-dialog="showAddDialog" :tree-node="node" @hideAddDptDialog="showAddDialog=false" @addDpt="getDepartments" /> -->
     <!-- 用sync修饰符，上面的代码中，删除@hideAddDptDialog="showAddDialog=false"。 :show-add-dialog="showAddDialog"写成:show-add-dialog.sync="showAddDialog" -->
-    <AddDpt :show-add-dialog.sync="showAddDialog" :tree-node="node" @addDpt="getDepartments" />
+    <AddDpt ref="editDptForm" :show-add-dialog.sync="showAddDialog" :tree-node="node" @OKDpt="getDepartments" />
+
+    <div v-loading="loading" class="dashboard-container" />
   </div>
 </template>
 
@@ -56,7 +58,8 @@ export default {
         label: 'name'
       },
       showAddDialog: false,
-      node: null // 记录当前点击的node节点
+      node: null, // 记录当前点击的node节点
+      loading: false
     }
   },
   created() {
@@ -64,14 +67,21 @@ export default {
   },
   methods: {
     async getDepartments() {
+      this.loading = true
       const { companyName, depts } = await getDepartments()
       this.companyInfo = { name: companyName, manager: '朱元璋', id: '' }
       // this.dptData = depts// 能这么写。这么写无法得到树形结构数据
       this.dptData = transListToTreeData(depts, '')
+      this.loading = false
     },
     addDpt(node) {
       this.showAddDialog = true
       this.node = node
+    },
+    editDpt(node) {
+      this.showAddDialog = true
+      this.node = node
+      this.$refs.editDptForm.getDepartmentDetail(node.id)
     }
   }
 }

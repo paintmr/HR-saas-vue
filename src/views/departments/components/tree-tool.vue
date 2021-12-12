@@ -41,7 +41,7 @@ export default {
       if (type === 'add') {
         this.$emit('addDpt', this.treeNode)
       } else if (type === 'edit') {
-        console.log('编辑')
+        this.$emit('editDpt', this.treeNode)
       } else {
         this.$confirm('您确定要删除该组织部门吗？').then(() => {
           return delDepartment(this.treeNode.id)
