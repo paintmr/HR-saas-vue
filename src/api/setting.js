@@ -4,6 +4,12 @@ import request from '@/utils/request'
  * 获取角色列表
  * params是接口文档中的Query：page，pagesize
  */
+// export function getRoleList(params) {
+//   return request({
+//     url: '/sys/role',
+//     params
+//   })
+// }
 export function getRoleList(params) {
   return request({
     url: '/sys/role',
@@ -43,5 +49,15 @@ export function updateRole(data) {
     url: `/sys/role/${data.id}`,
     data,
     method: 'put'
+  })
+}
+/**
+ * 新增角色
+ */
+export function addRole(data) {
+  return request({
+    url: '/sys/role',
+    data,
+    method: 'post'
   })
 }

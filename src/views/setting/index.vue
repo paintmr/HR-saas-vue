@@ -6,7 +6,7 @@
         <el-tab-pane label="角色管理" name="first">
 
           <el-row style="height:60px">
-            <el-button icon="el-icon-plus" size="small" type="primary">新增角色</el-button>
+            <el-button icon="el-icon-plus" size="small" type="primary" @click="addRole">新增角色</el-button>
           </el-row>
 
           <el-table border="" :data="roleList">
@@ -26,7 +26,7 @@
             <el-pagination
               layout="prev, pager, next"
               :total="page.total"
-              :current-page="page.currentPage"
+              :current-page="page.page"
               :page-size="page.pageSize"
               @current-change="changePage"
             />
@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import { getRoleList, getCompanyInfo, deleteRole, getRoleDetail, updateRole } from '@/api/setting'
+import { getRoleList, getCompanyInfo, deleteRole, getRoleDetail, updateRole, addRole } from '@/api/setting'
 import { mapGetters } from 'vuex'
 export default {
   data() {
@@ -95,7 +95,7 @@ export default {
       activeName: 'first',
       roleList: [],
       page: {
-        currentPage: 1,
+        page: 1,
         pageSize: 10,
         total: 0
       },
@@ -122,7 +122,7 @@ export default {
       this.roleList = rows
     },
     changePage(newPage) {
-      this.page.currentPage = newPage
+      this.page.page = newPage
       this.getRoleList()
     },
     async getCompanyInfo() {
@@ -143,13 +143,17 @@ export default {
       this.roleDialogVisible = true // 先获取数据，再出弹层，避免出现空对话框
       this.roleDialogMsg = '编辑角色成功'
     },
+    addRole() {
+      this.roleDialogVisible = true // 先获取数据，再出弹层，避免出现空对话框
+      this.roleDialogMsg = '添加角色成功'
+    },
     async roleOK() {
       try {
         await this.$refs.roleForm.validate()
         if (this.roleForm.id) {
           await updateRole(this.roleForm)
         } else {
-          // 待完成
+          await addRole(this.roleForm)
         }
         this.getRoleList()
         this.$message.success(this.roleDialogMsg)
@@ -160,6 +164,13 @@ export default {
     },
     roleCancel() {
       this.roleDialogVisible = false
+      // 把roleForm数据置空，去除roleForm.id在roleOK()中的影响
+      this.roleForm = {
+        name: '',
+        description: ''
+      }
+      // 移除校验规则
+      this.$refs.roleForm.resetFields()
     }
   }
 }
