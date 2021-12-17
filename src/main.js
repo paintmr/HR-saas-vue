@@ -17,6 +17,8 @@ import '@/permission' // permission control
 
 import * as directives from '@/directives' // 这样引入，可以得到directives中导出的所有数据
 
+import Component from '@/components'
+
 // 注册自定义指令
 // 遍历所有导出的指令对象，全局注册自定义指令
 Object.keys(directives).forEach(key => {
@@ -28,6 +30,8 @@ Object.keys(directives).forEach(key => {
 Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
+
+Vue.use(Component) // 注册自己的插件
 
 Vue.config.productionTip = false
 
