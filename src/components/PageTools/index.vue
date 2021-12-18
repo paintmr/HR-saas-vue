@@ -7,8 +7,10 @@
           <slot name="before" />
         </div>
       </el-col>
-      <el-col type="flex" justify="end">
-        <slot name="after" />
+      <el-col>
+        <el-row type="flex" justify="end">
+          <slot name="after" />
+        </el-row>
       </el-col>
     </el-row>
   </el-card>
@@ -19,7 +21,7 @@ export default {
   props: {
     showBefore: {
       type: Boolean,
-      default: true
+      default: false
     }
   }
 }
@@ -42,3 +44,4 @@ export default {
   }
 }
 </style>
+

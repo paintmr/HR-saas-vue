@@ -19,11 +19,19 @@ import * as directives from '@/directives' // 这样引入，可以得到directi
 
 import Component from '@/components'
 
+import * as filters from '@/filters'
+
 // 注册自定义指令
 // 遍历所有导出的指令对象，全局注册自定义指令
 Object.keys(directives).forEach(key => {
   // 注册自定义指令
   Vue.directive(key, directives[key])
+})
+
+// 注册全局过滤器
+Object.keys(filters).forEach(key => {
+  // 注册过滤器
+  Vue.filter(key, filters[key])
 })
 
 // set ElementUI lang to EN
