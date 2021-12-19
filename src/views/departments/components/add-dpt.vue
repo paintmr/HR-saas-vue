@@ -1,10 +1,10 @@
 <template>
-  <!-- close是点右上角的X触发 -->
+  <!-- :before-close是点右上角的X触发 -->
   <el-dialog
     :title="showTitle"
     :visible.sync="showAddDialog"
     width="30%"
-    close="hideDptDialog"
+    :before-close="hideDptDialog"
   >
     <!-- label-width设置label的长度 -->
     <el-form ref="dptForm" label-width="120px" :model="dptForm" :rules="rules">

@@ -67,7 +67,7 @@
     <el-dialog
       title="编辑角色"
       :visible.sync="roleDialogVisible"
-      close="roleCancel"
+      :before-close="roleCancel"
     >
       <el-form ref="roleForm" :model="roleForm" :rules="roleFormRules" label-width="120px">
         <el-form-item label="角色名称" prop="name">
