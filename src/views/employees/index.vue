@@ -118,13 +118,18 @@ export default {
         // 用1页获取所有员工数据
         const { rows } = await getEmployeeDetailList({ page: 1, size: this.page.total }) // 这里的rows数据结构是[{username: 'Amy', mobile: 12345678},{username: 'Tom', mobile: 66721346}]。下面excel.export_json_to_excel()所需的参数data的数据结构是[['Amy', 12345678],['Tom', 66721346]]
         const data = this.formatJson(headers, rows)
+        // 复杂表头设置
+        const multiHeader = [['姓名', '主要信息', '', '', '', '', '部门']] // 这个数组中，每一个元素数组是一行。每个元素数组的每个元素，是一列。
+        const merges = ['A1:A2', 'B1:F1', 'G1:G2'] // 这里写的是multiHeader中需要合并的单元格。本数组中每个元素，冒号前后的内容，就是待合并的单元格
         // excel是引入的@/vendor/Export2Excel文件对象
         excel.export_json_to_excel({
           // header: ['姓名', '工资'],
           header: Object.keys(headers),
           data,
-          filename: '员工信息表'
+          filename: '员工信息表',
           // bookType: 'txt' //bookType默认是.xlsx文档，默认可以不写bookType键值对
+          multiHeader,
+          merges
         })
       })
     },
