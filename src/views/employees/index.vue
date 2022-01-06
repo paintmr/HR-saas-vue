@@ -3,8 +3,8 @@
     <PageTools :show-before="true">
       <span slot="before">共166条记录</span>
       <template slot="after">
-        <el-button size="small" type="warning" @click="$router.push('/import')">导入</el-button>
-        <el-button size="small" type="danger">导出</el-button>
+        <el-button size="small" type="warning" @click="$router.push('/import')">Excel导入员工</el-button>
+        <el-button size="small" type="danger" @click="exportData">Excel导出员工</el-button>
         <el-button class="el-icon-plus" size="small" type="primary" @click="showEmployeeDialog = true">新增员工</el-button>
       </template>
     </PageTools>
@@ -56,6 +56,8 @@
 import { getEmployeeDetailList, deleteEmployee } from '@/api/employees'
 import EmployeeEnum from '@/api/constants/employees'
 import AddEmployee from './components/add-employee.vue'
+import { formatDate } from '@/filters'
+
 export default {
   components: {
     AddEmployee
@@ -100,6 +102,53 @@ export default {
       } catch (error) {
         console.log(error)
       }
+    },
+    exportData() {
+      const headers = {
+        '姓名': 'username',
+        '手机号': 'mobile',
+        '入职日期': 'timeOfEntry',
+        '聘用形式': 'formOfEmployment',
+        '转正日期': 'correctionTime',
+        '工号': 'workNumber',
+        '部门': 'departmentName'
+      }
+      // 因为导出Excel的相关包裹很大，且导出功能不常用，所以用懒加载的方式导出员工数据存为Excel文件。
+      import('@/vendor/Export2Excel').then(async excel => {
+        // 用1页获取所有员工数据
+        const { rows } = await getEmployeeDetailList({ page: 1, size: this.page.total }) // 这里的rows数据结构是[{username: 'Amy', mobile: 12345678},{username: 'Tom', mobile: 66721346}]。下面excel.export_json_to_excel()所需的参数data的数据结构是[['Amy', 12345678],['Tom', 66721346]]
+        const data = this.formatJson(headers, rows)
+        // excel是引入的@/vendor/Export2Excel文件对象
+        excel.export_json_to_excel({
+          // header: ['姓名', '工资'],
+          header: Object.keys(headers),
+          data,
+          filename: '员工信息表'
+          // bookType: 'txt' //bookType默认是.xlsx文档，默认可以不写bookType键值对
+        })
+      })
+    },
+    formatJson(headers, rows) {
+      return rows.map(item => { // item是这样的{username: 'Amy', mobile: 12345678}
+        return Object.keys(headers).map(key => {
+          if (headers[key] === 'timeOfEntry' || headers[key] === 'correctionTime') {
+            // 格式化日期
+            return formatDate(item[headers[key]])
+          } else if (headers[key] === 'formOfEmployment') {
+            const obj = EmployeeEnum.hireType.find(hiretp => hiretp.id === item[headers[key]])
+            return obj ? obj.value : '未知'
+          }
+          return item[headers[key]] // headers[key]得到'username', 'mobile'。item[headers[key]]会得到['Amy', 12345678]
+        })
+      })
+      // 上面3行代码
+      // return rows.map(item => {
+      //   return Object.keys(headers).map(key => {
+      //     return item[headers[key]]
+      //   })
+      // })
+      // 可以改为
+      // return rows.map(item => Object.keys(headers).map(key => item[headers[key]])) // 因为需要处理时间格式问题，所以代码还按上面的写
     }
   }
 }
