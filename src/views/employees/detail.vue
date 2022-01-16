@@ -15,7 +15,12 @@
             </el-form-item>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane label="个人信息" />
+        <el-tab-pane label="个人信息">
+          <!-- <user-info /> -->
+          <el-button @click="UserComponent='el-button'">UserInfo to button</el-button>
+          <el-button @click="UserComponent='UserInfo'">button to UserInfo</el-button>
+          <component :is="UserComponent" />
+        </el-tab-pane>
         <el-tab-pane label="岗位信息" />
       </el-tabs>
     </el-card>
@@ -25,10 +30,15 @@
 <script>
 import { getUserDetailById } from '@/api/user'
 import { saveUserDetailById } from '@/api/employees'
+import UserInfo from './components/user-info'
 
 export default {
+  components: {
+    UserInfo
+  },
   data() {
     return {
+      UserComponent: 'UserInfo',
       userId: this.$route.params.id,
       userInfo: {
         username: '',
