@@ -11,7 +11,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="入职时间">
-            <el-date-picker v-model="userInfo.timeOfEntry" type="date" class="inputW" value-format="YYYY-MM-DD" />
+            <el-date-picker v-model="userInfo.timeOfEntry" type="date" class="inputW" value-format="yyyy-MM-DD" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -216,10 +216,10 @@
           <el-input v-model="formData.graduateSchool" placeholder="请输入" class="inputW2" />
         </el-form-item>
         <el-form-item label="入学时间">
-          <el-date-picker v-model="formData.enrolmentTime" type="data" placeholder="请输入时间" class="inputW" value-format="yyyy-MM-dd" />
+          <el-date-picker v-model="formData.enrolmentTime" type="date" placeholder="请输入时间" class="inputW" value-format="yyyy-MM-dd" />
         </el-form-item>
         <el-form-item label="毕业时间">
-          <el-date-picker v-model="formData.graduationTime" type="data" placeholder="请输入时间" class="inputW" value-format="yyyy-MM-dd" />
+          <el-date-picker v-model="formData.graduationTime" type="date" placeholder="请输入时间" class="inputW" value-format="yyyy-MM-dd" />
         </el-form-item>
         <el-form-item label="专业">
           <el-input v-model="formData.major" placeholder="请输入" class="inputW" />
