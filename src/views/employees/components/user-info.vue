@@ -325,6 +325,14 @@ export default {
         remarks: '' // 备注
       }
     }
+  },
+  methods: {
+    saveUser() {
+
+    },
+    savePersonal() {
+
+    }
   }
 }
 </script>
