@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="upload-pic">
     <!-- file-list是上传的文件列表，可以绑定到上传组件中，让上传组件来显示。 -->
     <el-upload
       action="#"
@@ -8,32 +8,52 @@
       :on-preview="preview"
       :file-list="fileList"
       :on-remove="handleRemove"
-      :class="{disabled: fileComputed }"
+      :class="{ disabled: fileComputed }"
       :on-change="changeFile"
       :before-upload="beforeUpload"
       :http-request="upload"
     >
       <i class="el-icon-plus" />
     </el-upload>
-    <el-dialog :visible.sync="dialogVisible">
-      <img width="100%" :src="dialogImageUrl" alt="">
+    <!--v-if="uploadedPicId"  -->
+    <div
+      v-if="uploadedPicId"
+      class="progress-bar"
+    >
+      <el-progress
+        :text-inside="true"
+        :stroke-width="16"
+        :percentage="uploadingProgress"
+      />
+    </div>
+    <el-dialog
+      :visible.sync="dialogVisible"
+      title="图片"
+    >
+      <img
+        width="100%"
+        :src="dialogImageUrl"
+        alt=""
+      >
     </el-dialog>
   </div>
 </template>
 
 <script>
-import COS from 'cos-js-sdk-v5'// 引入腾讯云COS包
-// 实例化COS
-const cos = new COS({
-  SecretId: 'AKID0mqfEWqlUzIbeSkGRL6c7ML6c0B93To9', // 身份识别 ID
-  SecretKey: 'JFwNZdeRF2iOp03FFsGNDm44vWFitmNF' // 身份密钥
-})
+import axios from 'axios'
+
 export default {
   data() {
     return {
-      fileList: [{ url: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180815%2Fe24fce3f242e4236a44f391c7fb46c3f.jpeg&refer=http%3A%2F%2F5b0988e595225.cdn.sohucs.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1645459367&t=e4f2ecc3014eea73c0aa7a4788997ab6' }],
+      fileList: [
+        {
+          url: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180815%2Fe24fce3f242e4236a44f391c7fb46c3f.jpeg&refer=http%3A%2F%2F5b0988e595225.cdn.sohucs.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1645459367&t=e4f2ecc3014eea73c0aa7a4788997ab6'
+        }
+      ],
       dialogImageUrl: '',
-      dialogVisible: false
+      dialogVisible: false,
+      uploadedPicId: '',
+      uploadingProgress: 0
     }
   },
   computed: {
@@ -48,43 +68,56 @@ export default {
       this.dialogVisible = true
     },
     handleRemove(file, fileList) {
-      // console.log(file, fileList)
-      this.fileList = this.fileList.filter(item => item.uid !== file.uid)
+      this.fileList = this.fileList.filter((item) => item.uid !== file.uid)
       // this.fileList = fileList// 用这种方式也可以
     },
     changeFile(file, fileList) {
-      // console.log(fileList)
-      this.fileList = fileList.map(item => item)
+      // this.fileList = fileList.map((item) => item)
+      this.fileList = fileList
     },
     beforeUpload(file) {
-      // console.log(file)
+      // 判断文件类别
       const types = ['image/jpeg', 'image/gif', 'image/bmp', 'image/png']
       if (!types.includes(file.type)) {
-        this.$message.error('上传的图片只能是JPG，GIF，BMP，PNG格式')
+        this.$message.error('只能上传JPG，GIF，BMP，PNG格式的图片')
         return false
       }
+
+      // 判断文件大小
+      // 1M = 1024KB 1KB = 1024 bit(字节)
       const maxSize = 5 * 1024 * 1024
       if (maxSize < file.size) {
         this.$message.error('图片不能超过5M')
         return false
       }
+      this.uploadedPicId = file.uid
       return true
     },
-    upload(params) {
-      console.log(params)
+    async upload(params) {
+      const formData = new FormData()
+      formData.append('file', params.file)
       if (params.file) {
         // 执行上传操作
-        cos.putObject({
-          Bucket: 'shuiruohanyu-106-1302806742', // 存储桶
-          Region: 'ap-beijing', // 地域
-          Key: params.file.name, // 文件名
-          Body: params.file, // 要上传的文件对象
-          StorageClass: 'STANDARD' // 上传的模式类型 直接默认 标准模式即可
-          // 上传到腾讯云 =》 哪个存储桶 哪个地域的存储桶 文件  格式  名称 回调
-        }, function(err, data) {
-          // data返回数据之后 应该如何处理
-          console.log(err || data)
-        })
+        try {
+          const res = await axios.post('http://localhost:3344/dropzone', formData, {
+            onUploadProgress: (e) => {
+              this.uploadingProgress = Math.round((e.loaded / e.total) * 100)
+            }
+          })
+          this.fileList = this.fileList.map(file => {
+            if (file.uid === this.uploadedPicId) {
+              return { url: `http://localhost:3344${res.data.uploadedFileAddress}`, uploaded: true }
+            }
+          })
+          this.$message.success('Picture has been uploaded.')
+          this.uploadedPicId = ''
+          this.uploadingProgress = 0
+        } catch (error) {
+          console.log(error)
+          this.$message.error(error.response.data.error)
+          this.uploadedPicId = ''
+          this.uploadingProgress = 0
+        }
       }
     }
   }
@@ -92,7 +125,17 @@ export default {
 </script>
 
 <style lang="scss">
+.upload-pic {
+  position: relative;
+}
 .disabled .el-upload--picture-card {
-  display: none
+  display: none;
+}
+.progress-bar {
+  width: 146px;
+  position: absolute;
+  left: 1px;
+  bottom: 12px;
+  width: 146px;
 }
 </style>
