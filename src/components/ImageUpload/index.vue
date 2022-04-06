@@ -46,9 +46,9 @@ export default {
   data() {
     return {
       fileList: [
-        {
-          url: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180815%2Fe24fce3f242e4236a44f391c7fb46c3f.jpeg&refer=http%3A%2F%2F5b0988e595225.cdn.sohucs.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1645459367&t=e4f2ecc3014eea73c0aa7a4788997ab6'
-        }
+        //   {
+        //   url: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180815%2Fe24fce3f242e4236a44f391c7fb46c3f.jpeg&refer=http%3A%2F%2F5b0988e595225.cdn.sohucs.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1645459367&t=e4f2ecc3014eea73c0aa7a4788997ab6'
+        // }
       ],
       dialogImageUrl: '',
       dialogVisible: false,
@@ -99,7 +99,7 @@ export default {
       if (params.file) {
         // 执行上传操作
         try {
-          const res = await axios.post('http://localhost:3344/dropzone', formData, {
+          const res = await axios.post('http://localhost:3344/uploadpic', formData, {
             onUploadProgress: (e) => {
               this.uploadingProgress = Math.round((e.loaded / e.total) * 100)
             }
