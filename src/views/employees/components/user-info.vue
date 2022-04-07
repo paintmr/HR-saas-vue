@@ -539,14 +539,15 @@ export default {
   methods: {
     async getUserDetailById() {
       this.userInfo = await getUserDetailById(this.userId)
-      if (this.userInfo.staffPhoto) {
-        this.$refs.staffPhoto.fileList = [{ url: this.userInfo.staffPhoto, upload: true }]
+      // 存入数据库的URL有可能是空格，调取出来，图片显示为空白。所以要用this.userInfo.staffPhoto.trim()判断一下
+      if (this.userInfo.staffPhoto && this.userInfo.staffPhoto.trim()) {
+        this.$refs.staffPhoto.fileList = [{ url: this.userInfo.staffPhoto, uploaded: true }]
       }
     },
     async saveUser() {
       const fileList = this.$refs.staffPhoto.fileList // url数组
       // 判断图片是否上传完成
-      if (fileList.some(file => !file.upload)) {
+      if (fileList.some(file => !file.uploaded)) {
         // 有图片没上传完成
         this.$message.warning('图片还未上传成功，无法保存用户信息')
         return
@@ -555,18 +556,29 @@ export default {
       // 存储头像地址
       // 调用父组件
       // await saveUserDetailById(this.userInfo)
-      await saveUserDetailById({ ...this.userInfo, staffPhoto: fileList && fileList.length ? fileList[0].url : '' })
+      // 接口要求，必须给staffPhoto至少一个空字符串' '（中间有空格）。
+      await saveUserDetailById({ ...this.userInfo, staffPhoto: fileList && fileList.length ? fileList[0].url : ' ' })
 
       this.$message.success('保存成功')
     },
     async getPersonalDetail() {
       this.formData = await getPersonalDetail(this.userId)
-      if (this.formData.staffPhoto) {
-        this.$refs.basicInfoStaffPhoto.fileList = [{ url: this.formData.staffPhoto, upload: true }]
+      // 这里会报504的请求超时错误（504 (Gateway Timeout)），在命令行上ping ihrm-java.itheima.net，发现请求超时。应该是服务器的问题。
+      if (this.formData.staffPhoto && this.formData.staffPhoto.trim()) {
+        this.$refs.basicInfoStaffPhoto.fileList = [{ url: this.formData.staffPhoto, uploaded: true }]
       }
     },
     async savePersonal() {
-      await updatePersonal({ ...this.formData, id: this.userId })
+      // 判断图片是否上传完成
+      const fileList = this.$refs.staffPhoto.fileList // url数组
+      if (fileList.some(file => !file.uploaded)) {
+        // 图片没有上传完成
+        this.$message.warning('图片还未上传成功，无法保存用户信息')
+        return
+      }
+      // 存储头像地址
+      console.log('savePersonal')
+      await updatePersonal({ ...this.formData, staffPhoto: fileList && fileList.length ? fileList[0].url : ' ' })
       this.$message.success('保存成功')
     }
 
