@@ -43,10 +43,12 @@
         >
           <template v-slot="{row}">
             <img
+              :id="row.id"
               v-imageerror="require('@/assets/common/bigUserHeader.png')"
               :src="row.staffPhoto"
               style="border-radius: 50%; width: 100px; height: 100px; padding: 10px"
               alt=""
+              @click="showQrCode(row.staffPhoto)"
             >
           </template>
         </el-table-column>
@@ -136,6 +138,19 @@
 
     <!-- 新增员工弹层 -->
     <AddEmployee :show-employee-dialog.sync="showEmployeeDialog" />
+
+    <!-- 打印员工头像弹层 -->
+    <el-dialog
+      title="用户头像二维码地址"
+      :visible.sync="showCodeDialog"
+    >
+      <el-row
+        type="flex"
+        justify="center"
+      >
+        <canvas ref="myQrCanvas" />
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -144,6 +159,7 @@ import { getEmployeeDetailList, deleteEmployee } from '@/api/employees'
 import EmployeeEnum from '@/api/constants/employees'
 import AddEmployee from './components/add-employee.vue'
 import { formatDate } from '@/filters'
+import QrCode from 'qrcode'
 
 export default {
   components: {
@@ -158,7 +174,8 @@ export default {
         size: 10,
         total: 0
       },
-      showEmployeeDialog: false
+      showEmployeeDialog: false,
+      showCodeDialog: false
     }
   },
   created() {
@@ -241,6 +258,18 @@ export default {
       // })
       // 可以改为
       // return rows.map(item => Object.keys(headers).map(key => item[headers[key]])) // 因为需要处理时间格式问题，所以代码还按上面的写
+    },
+    showQrCode(url) {
+      if (url) {
+        this.showCodeDialog = true
+        // 数据更新了但是不会立刻拿到弹层，因为页面的渲染是异步的。要借助$nextTick()
+        this.$nextTick(() => {
+          // 此时确认有弹层了。以弹层myQrCanvas为画布，显示url信息的二维码
+          QrCode.toCanvas(this.$refs.myQrCanvas, url)
+        })
+      } else {
+        this.$message.warning('该用户还未上传头像')
+      }
     }
   }
 }
