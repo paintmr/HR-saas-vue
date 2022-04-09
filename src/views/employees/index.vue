@@ -110,6 +110,7 @@
             <el-button
               type="text"
               size="small"
+              @click="editRole(row.id)"
             >角色</el-button>
             <el-button
               type="text"
@@ -151,6 +152,13 @@
         <canvas ref="myQrCanvas" />
       </el-row>
     </el-dialog>
+
+    <!-- 分配角色弹层 -->
+    <AssignRole
+      ref="assignRole"
+      :show-role-dialog.sync="showRoleDialog"
+      :user-id="userId"
+    />
   </div>
 </template>
 
@@ -160,10 +168,12 @@ import EmployeeEnum from '@/api/constants/employees'
 import AddEmployee from './components/add-employee.vue'
 import { formatDate } from '@/filters'
 import QrCode from 'qrcode'
+import AssignRole from './components/assign-role.vue'
 
 export default {
   components: {
-    AddEmployee
+    AddEmployee,
+    AssignRole
   },
   data() {
     return {
@@ -175,7 +185,9 @@ export default {
         total: 0
       },
       showEmployeeDialog: false,
-      showCodeDialog: false
+      showCodeDialog: false,
+      showRoleDialog: false,
+      userId: null // 定义一个userId
     }
   },
   created() {
@@ -270,6 +282,13 @@ export default {
       } else {
         this.$message.warning('该用户还未上传头像')
       }
+    },
+    async editRole(id) {
+      this.userid = id
+      // 调用子组件中的方法，把被点击的用户id传进去
+      await this.$refs.assignRole.getUserDetailById(id)
+      // 等分配角色弹框页面的复选框里的数据都拿到了，再弹框，否则会先出来空白页，然后再填充数据的抖动。这就要用到async await
+      this.showRoleDialog = true
     }
   }
 }
