@@ -207,7 +207,6 @@ export default {
     },
     btnCancel() {
       this.showDialog = false
-      console.log('btnCancel')
       // 清空form表单
       this.formData = {
         name: '', // 名称
