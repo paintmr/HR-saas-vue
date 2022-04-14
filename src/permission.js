@@ -6,13 +6,18 @@ import 'nprogress/nprogress.css' // 引入进度条样式
 
 const whileList = ['/login', '/404'] // 定义白名单：所有不需要token也可以访问的页面
 // 路由的前置守卫
-router.beforeEach(async(to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   NProgress.start() // 开启进度条
   // 判断有无token
   if (store.getters.token) {
     // 如果有token，继续判断是否去登录页面
     if (!store.getters.userId) {
-      await store.dispatch('user/getUserInfo')
+      const userInfo = await store.dispatch('user/getUserInfo')
+      // 筛选用户的可用路由
+      const routes = await store.dispatch('permission/filterRoutes', userInfo.roles.menus)
+      // 把动态路由添加到路由表中。默认的路由表只有静态路由，没有动态路由
+      router.addRoutes(routes)
+      next(to.path)
     }
     if (to.path === '/login') {
       // 有token+去登录页面，跳转到主页
