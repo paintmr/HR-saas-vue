@@ -4,10 +4,10 @@ import employeeRouter from './modules/employees'
 import approvalRouter from './modules/approvals'
 import attendanceRouter from './modules/attendances'
 import departmentRouter from './modules/departments'
-import permissionRouter from './modules/permission'
-import salaryRouter from './modules/salaries'
-import settingRouter from './modules/setting'
-import socialRouter from './modules/social'
+import permissionRouter from './modules/permissions'
+import salaryRouter from './modules/salarys'
+import settingRouter from './modules/settings'
+import socialRouter from './modules/social_securitys'
 
 Vue.use(Router)
 
@@ -23,7 +23,7 @@ import Layout from '@/layout'
  *                                if not set alwaysShow, when item has more than one children route,
  *                                it will becomes nested mode, otherwise not show the root menu
  * redirect: noRedirect           if set noRedirect will no redirect in the breadcrumb
- * name:'router-name'             the name is used by <keep-alive> (must set!!!)
+ * name:'router-name'             the name is used by <keep-alive> (must set!)
  * meta : {
     roles: ['admin','editor']    control the page roles (you can set multiple roles)
     title: 'title'               the name show in sidebar and breadcrumb (recommend set)
@@ -73,7 +73,7 @@ export const constantRoutes = [
     }]
   },
 
-  // 404 page must be placed at the end !!!
+  // 404 page must be placed at the end !
   { path: '*', redirect: '/404', hidden: true }
 ]
 
@@ -92,7 +92,8 @@ export const asyncRoutes = [
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: [...constantRoutes, ...asyncRoutes] // 静态路由和动态路由临时合并
+  // routes: [...constantRoutes, ...asyncRoutes] // 静态路由和动态路由临时合并
+  routes: [...constantRoutes]
 })
 
 const router = createRouter()
@@ -101,6 +102,7 @@ const router = createRouter()
 export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
+  // marcher是路由表数据
 }
 
 export default router

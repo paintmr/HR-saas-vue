@@ -11,19 +11,20 @@ router.beforeEach(async (to, from, next) => {
   // 判断有无token
   if (store.getters.token) {
     // 如果有token，继续判断是否去登录页面
-    if (!store.getters.userId) {
-      const userInfo = await store.dispatch('user/getUserInfo')
-      // 筛选用户的可用路由
-      const routes = await store.dispatch('permission/filterRoutes', userInfo.roles.menus)
-      // 把动态路由添加到路由表中。默认的路由表只有静态路由，没有动态路由
-      router.addRoutes(routes)
-      next(to.path)
-    }
     if (to.path === '/login') {
       // 有token+去登录页面，跳转到主页
       next('/')
     } else {
-      next() // 放行
+      if (!store.getters.userId) {
+        const userInfo = await store.dispatch('user/getUserInfo')
+        // 筛选用户的可用路由
+        const routes = await store.dispatch('permission/filterRoutes', userInfo.roles.menus)
+        // 把动态路由添加到路由表中。默认的路由表只有静态路由，没有动态路由
+        router.addRoutes(routes)
+        next(to.path)
+      } else {
+        next() // 放行
+      }
     }
   } else {
     // 没有token，但在白名单里，放行
