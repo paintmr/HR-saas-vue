@@ -21,6 +21,8 @@ import Components from '@/components'
 
 import * as filters from '@/filters'
 
+import checkPermission from '@/mixin/checkPermission'
+
 // 注册自定义指令
 // 遍历所有导出的指令对象，全局注册自定义指令
 Object.keys(directives).forEach(key => {
@@ -40,6 +42,9 @@ Vue.use(ElementUI, { locale })
 // Vue.use(ElementUI)
 
 Vue.use(Components) // 注册自己的插件
+
+// 全局混入检查对象，表示所有的组件都拥有了checkPermission(key)方法
+Vue.mixin(checkPermission)
 
 Vue.config.productionTip = false
 
