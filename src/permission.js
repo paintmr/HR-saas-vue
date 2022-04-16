@@ -20,7 +20,8 @@ router.beforeEach(async (to, from, next) => {
         // 筛选用户的可用路由
         const routes = await store.dispatch('permission/filterRoutes', userInfo.roles.menus)
         // 把动态路由添加到路由表中。默认的路由表只有静态路由，没有动态路由
-        router.addRoutes(routes)
+        // router.addRoutes(routes)
+        router.addRoutes([...routes, { path: '*', redirect: '/404', hidden: true }])
         next(to.path)
       } else {
         next() // 放行

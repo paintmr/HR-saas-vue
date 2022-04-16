@@ -71,10 +71,11 @@ export const constantRoutes = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: '首页', icon: 'dashboard' }
     }]
-  },
+  }
 
+  // 这是静态路由的最后。加了动态路由以后，必须把404放到动态路由的最后。src/permission.js中router.addRoutes()
   // 404 page must be placed at the end !
-  { path: '*', redirect: '/404', hidden: true }
+  // { path: '*', redirect: '/404', hidden: true }
 ]
 
 // 动态路由
